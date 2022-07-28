@@ -1,20 +1,33 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
 default:
   tags:
     - xe
 
 stages:
+  - lint
   - build
-  - test
+
+before_script:
+  - apt update
+  - apt install --yes git perl-doc
+
+lint-test-job:
+  stage: lint
+  allow_failure: true
+  # TODO: move to using dim from maintainer-tools
+  script:
+    - echo "Linting code ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD..."
+    - ./scripts/checkpatch.pl
+        -q --emacs --strict --show-types
+        --max-line-length=100
+        --ignore=BIT_MACRO,SPLIT_STRING,LONG_LINE_STRING,BOOL_MEMBER
+        -g ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD
 
 build-job:
   stage: build
   script:
     - echo "Compiling the code..."
-    - echo "Compile complete."
-
-lint-test-job:
-  stage: test
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
+    - echo "I lied. Just pretend it passed"
