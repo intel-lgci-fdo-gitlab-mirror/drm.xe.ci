@@ -6,11 +6,13 @@ default:
   tags:
     - xe
   before_script:
+    - echo -e "\e[0Ksection_start:$(date +%s):install_dependencies[collapsed=true]\r\e[0KInstall dependencies"
     - apt update
     - apt install --yes
         git perl-doc
         build-essential ccache
         bc gawk flex bison libelf-dev libpci-dev libiberty-dev autoconf xz-utils
+    - echo -e "\e[0Ksection_end:$(date +%s):install_dependencies\r\e[0K"
 
 stages:
   - lint
