@@ -5,14 +5,16 @@ workflow:
 default:
   tags:
     - xe
+  before_script:
+    - apt update
+    - apt install --yes
+        git perl-doc
+        build-essential ccache
+        bc gawk flex bison libelf-dev libpci-dev libiberty-dev autoconf xz-utils
 
 stages:
   - lint
   - build
-
-before_script:
-  - apt update
-  - apt install --yes git perl-doc
 
 lint-test-job:
   stage: lint
@@ -26,8 +28,30 @@ lint-test-job:
         --ignore=BIT_MACRO,SPLIT_STRING,LONG_LINE_STRING,BOOL_MEMBER
         -g ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD
 
+.ccache-setup:
+  variables:
+    CCACHE_COMPILERCHECK: "content"
+    CCACHE_COMPRESS: "true"
+    CCACHE_DIR: /cache/xe-kernel/ccache
+  # Use ccache transparently, and print stats before/after
+  before_script:
+    - !reference [default, before_script]
+    - export PATH="/usr/lib/ccache:$PATH"
+    - export CCACHE_BASEDIR="$PWD"
+    - echo -e "\e[0Ksection_start:$(date +%s):ccache_before[collapsed=true]\r\e[0Kccache stats before build"
+    - ccache --show-stats
+    - echo -e "\e[0Ksection_end:$(date +%s):ccache_before\r\e[0K"
+  after_script:
+    - echo -e "\e[0Ksection_start:$(date +%s):ccache_after[collapsed=true]\r\e[0Kccache stats after build"
+    - ccache --show-stats
+    - echo -e "\e[0Ksection_end:$(date +%s):ccache_after\r\e[0K"
+
 build-job:
+  extends: .ccache-setup
   stage: build
   script:
-    - echo "Compiling the code..."
-    - echo "I lied. Just pretend it passed"
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.freedesktop.org/drm/xe/ci.git .ci
+    - mkdir -p build64
+    - cat .ci/kernel/kconfig > build64/.config
+    - make O=build64 olddefconfig
+    - make O=build64 -j$(nproc)
