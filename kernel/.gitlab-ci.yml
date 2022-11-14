@@ -30,6 +30,14 @@ lint-checkpatch-job:
         --ignore=BIT_MACRO,SPLIT_STRING,LONG_LINE_STRING,BOOL_MEMBER
         -g ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD
 
+lint-docs-job:
+  stage: lint
+  script:
+    - echo "kernel-doc lint..."
+    - find drivers/gpu/drm/xe/ -name '*.[ch]' |
+        grep -ve i915_utils.h |
+        xargs ./scripts/kernel-doc -Werror -v -none
+
 .ccache-setup:
   variables:
     CCACHE_COMPILERCHECK: "content"
