@@ -18,12 +18,12 @@ stages:
   - lint
   - build
 
-lint-test-job:
+lint-checkpatch-job:
   stage: lint
   allow_failure: true
   # TODO: move to using dim from maintainer-tools
   script:
-    - echo "Linting code ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD..."
+    - echo "checkpatch code ${CI_MERGE_REQUEST_DIFF_BASE_SHA}..HEAD..."
     - ./scripts/checkpatch.pl
         -q --emacs --strict --show-types
         --max-line-length=100
