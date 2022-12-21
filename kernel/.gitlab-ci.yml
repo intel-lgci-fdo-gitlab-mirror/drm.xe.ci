@@ -34,9 +34,10 @@ lint-docs-job:
   stage: lint
   script:
     - echo "kernel-doc lint..."
-    - find drivers/gpu/drm/xe/ -name '*.[ch]' |
-        grep -ve i915_utils.h |
-        xargs ./scripts/kernel-doc -Werror -none
+    - find drivers/gpu/drm/xe/ -name '*.[ch]'
+        -not -path 'drivers/gpu/drm/xe/display/*'
+        -not -path drivers/gpu/drm/xe/i915_utils.h  |
+        xargs ./scripts/kernel-doc -Werror  -none
 
 .ccache-setup:
   variables:
