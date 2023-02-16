@@ -62,9 +62,17 @@ build-job:
   stage: build
   script:
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.freedesktop.org/drm/xe/ci.git .ci
+
     - echo -e "\e[0Ksection_start:$(date +%s):build_x86_64[collapsed=true]\r\e[0KBuild x86-64"
     - mkdir -p build64
     - cat .ci/kernel/kconfig > build64/.config
     - make O=build64 olddefconfig
     - make O=build64 -j$(nproc)
+    - echo -e "\e[0Ksection_end:$(date +%s):build_x86_64\r\e[0K"
+
+    - echo -e "\e[0Ksection_start:$(date +%s):build_x86_64_warnings[collapsed=true]\r\e[0KBuild x86-64 - xe with W=1"
+      # CONFIG_DRM_XE_DISPLAY currently breaks build with W=1. Just disable it for now
+    - ./scripts/config --file build64/.config --disable CONFIG_DRM_XE_DISPLAY
+    - make O=build64 modules_prepare
+    - make O=build64 M=drivers/gpu/drm/xe W=1 -j$(nproc)
     - echo -e "\e[0Ksection_end:$(date +%s):build_x86_64\r\e[0K"
