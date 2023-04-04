@@ -1,0 +1,7 @@
+#!/usr/bin/bash
+set -x
+pwd
+ls -la
+uname -a
+git -C kernel log --format=fuller | tee
+set +x
