@@ -3,5 +3,4 @@ set -x
 pwd
 ls -la
 uname -a
-git -C kernel log --format=fuller | tee
-set +x
+git --no-pager -C kernel log --format=fuller
