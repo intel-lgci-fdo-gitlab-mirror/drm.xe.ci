@@ -1,92 +1,48 @@
-# ci
+# Xe CI
 
-CI configuration for gitlab for xe-related repositories
+CI configuration for Xe-related repositories.
 
-## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## CI Hooks
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+(Or, Don't Break CI But Still Find Some Issues Challenge)
 
-## Add your files
+Hooks let you run arbitrary scripts to run extra checks within the CI pipeline.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- Hooks run only on the public Xe kernel premerge pipeline.
+- They are scripts being run in alphabetical order from the `hooks` directory.
+- Each script must return success (0) for the hooks stage to succeed - if any single script fails, the entire pipeline fails and hardware testing does not start.
+- Hooks run after the kernel is built, software-only tests are done and the actual hardware testing is about to begin. (**Note:** This may change at a later date.)
+- The runner image is currently not public (soon!), but for now:
+  - Image is an Ubuntu 20.04 container defined in the internal `drivers.gpu.i915.ci.pipelines` repo.
+  - You can peek at the current configuration in `docker/Dockerfile.ubuntu2004`.
+  - The `docker/common` directory is available in the container as `/common` and often used in most CI stages.
+  - The pipeline itself is defined in `pipelines/xe_kernel_pw/Jenkinsfile` - you can trace what's being done to the workspace before `stage('Hooks')` is invoked.
+- Working directory for your hooks is the CI workspace root, which looks like this:
+  - The `ci` directory contains a `--depth=1` clone of this repo.
+  - The `kernel` directory contains a `--depth=1` clone of [the kernel repo](https://gitlab.freedesktop.org/drm/xe/kernel) with the premerge changes applied to the tree with `git am`.
+  - The applied patch itself is in the workspace root as `kernel.mbox`.
+  - The workspace directory does not have a well-known name and can contain spaces or other special characters. (Quote all paths in your scripts!)
+- Adding a new hook: Create a new `XXname` script (two digits, then lowercase A-Z only, no extension - this name format is required for `run-parts` to work) and make it executable. Examples: `00checkpatch`, `20clangformat`.
+- Disabling a hook: Append a `.disabled` extension to any script.
+- Testing: Configure a fresh workspace as described above, then from the workspace root run:
+  - `./ci/hooks/99yourhook` for a single script, or...
+  - `./ci/run-hooks.sh` for all of them. (You need `run-parts` or `debianutils` installed for this to work.)
+- **Don't go online unless you have to.** Ideally, all checks should run 100% offline. Ask the CI team for a second opinion before doing anything network-related. (If you need to poke Coverity or other external services, you will probably need some setup there anyways.) If you do end up using the network...
+- **Don't store any credentials anywhere in the repo.** All secrets and credentials should be provided by the pipeline executor (Jenkins, GitLab CI) - ask the CI team for help with setting it up (usually by setting an environment variable that your script can read, which is then redacted from logs by Jenkins/GitLab).
+- **Don't modify the runner state.** This means no installing packages, messing with `systemctl`, et cetera. Instead, add a comment to your script that lists required magic sauce, then ask the CI team to configure the runner image as needed. This is so that when your scripts start, they've got everything ready - hooks are usually executed in a container where all environment changes are lost when `run-hooks.sh` exits.
+- Officially, the CI team doesn't support any of this - if you break it, you get to keep all the pieces. Good luck!
 
-```
-cd existing_repo
-git remote add origin https://gitlab.freedesktop.org/drm/xe/ci.git
-git branch -M main
-git push -uf origin main
-```
+Some environment variables are available to let you write scripts portable between CI and your local devenv:
 
-## Integrate with your tools
+- **Warning:** These names are not yet set in stone and may change within a few months.
+- `CI` - always `true` when running under CI.
+- `CI_WORKSPACE_DIR` - the main workspace dir in which your hooks execute. It contains all the run-specific stuff.
+- `CI_TOOLS_SRC_DIR` - dir which contains this repo (drm/xe/ci).
+- `CI_KERNEL_SRC_DIR` - dir which contains the cloned kernel.
+- `CI_SRC_DIR` - alias for `CI_KERNEL_SRC_DIR`, may be removed later.
+- `CI_KERNEL_BUILD_DIR` - dir which contains the main kernel build directory.
+- `CI_KERNEL_IMAGES_DIR` - the `INSTALL_PATH` for kernel's `make install`.
+- `CI_KERNEL_MODULES_DIR` - the `INSTALL_MOD_PATH` for kernel's `make modules_install`.
 
-- [ ] [Set up project integrations](https://gitlab.freedesktop.org/drm/xe/ci/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+The `00showenv` hook displays current values for these variables on each run for your convenience.
