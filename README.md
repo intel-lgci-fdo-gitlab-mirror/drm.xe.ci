@@ -27,3 +27,17 @@ Hooks let you run arbitrary scripts to run extra checks within the CI pipeline.
 - **Don't store any credentials anywhere in the repo.** All secrets and credentials should be provided by the pipeline executor (Jenkins, GitLab CI) - ask the CI team for help with setting it up (usually by setting an environment variable that your script can read, which is then redacted from logs by Jenkins/GitLab).
 - **Don't modify the runner state.** This means no installing packages, messing with `systemctl`, et cetera. Instead, add a comment to your script that lists required magic sauce, then ask the CI team to configure the runner image as needed. This is so that when your scripts start, they've got everything ready - hooks are usually executed in a container where all environment changes are lost when `run-hooks.sh` exits.
 - Officially, the CI team doesn't support any of this - if you break it, you get to keep all the pieces. Good luck!
+
+Some environment variables are available to let you write scripts portable between CI and your local devenv:
+
+- **Warning:** These names are not yet set in stone and may change within a few months.
+- `CI` - always `true` when running under CI.
+- `CI_WORKSPACE_DIR` - the main workspace dir in which your hooks execute. It contains all the run-specific stuff.
+- `CI_TOOLS_SRC_DIR` - dir which contains this repo (drm/xe/ci).
+- `CI_KERNEL_SRC_DIR` - dir which contains the cloned kernel.
+- `CI_SRC_DIR` - alias for `CI_KERNEL_SRC_DIR`, may be removed later.
+- `CI_KERNEL_BUILD_DIR` - dir which contains the main kernel build directory.
+- `CI_KERNEL_IMAGES_DIR` - the `INSTALL_PATH` for kernel's `make install`.
+- `CI_KERNEL_MODULES_DIR` - the `INSTALL_MOD_PATH` for kernel's `make modules_install`.
+
+The `00showenv` hook displays current values for these variables on each run for your convenience.
