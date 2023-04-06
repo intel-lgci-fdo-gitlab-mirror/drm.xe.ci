@@ -13,6 +13,11 @@ Hooks let you run arbitrary scripts to run extra checks within the CI pipeline.
 - They are scripts being run in alphabetical order from the `hooks` directory.
 - Each script must return success (0) for the hooks stage to succeed - if any single script fails, the entire pipeline fails and hardware testing does not start.
 - Hooks run after the kernel is built, software-only tests are done and the actual hardware testing is about to begin. (**Note:** This may change at a later date.)
+- The runner image is currently not public (soon!), but for now:
+  - Image is an Ubuntu 20.04 container defined in the internal `drivers.gpu.i915.ci.pipelines` repo.
+  - You can peek at the current configuration in `docker/Dockerfile.ubuntu2004`.
+  - The `docker/common` directory is available in the container as `/common` and often used in most CI stages.
+  - The pipeline itself is defined in `pipelines/xe_kernel_pw/Jenkinsfile` - you can trace what's being done to the workspace before `stage('Hooks')` is invoked.
 - Working directory for your hooks is the CI workspace root, which looks like this:
   - The `ci` directory contains a `--depth=1` clone of this repo.
   - The `kernel` directory contains a `--depth=1` clone of [the kernel repo](https://gitlab.freedesktop.org/drm/xe/kernel) with the premerge changes applied to the tree with `git am`.
