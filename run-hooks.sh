@@ -17,6 +17,9 @@ cleanup() {
     exit $retcode
 }
 
-trap "cleanup /workspace" EXIT
+if [[ "$CI" == "true" ]]; then
+    git config --global safe.directory '*'
+    trap "cleanup $CI_WORKSPACE_DIR" EXIT
+fi
 
 run-parts --exit-on-error --verbose "$(dirname $0)/hooks"
