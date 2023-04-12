@@ -1,7 +1,0 @@
-#!/usr/bin/bash
-set -x
-pwd
-ls -la
-uname -a
-export | grep -Ei "(^|\W)CI_"
-git --no-pager -C kernel log --format=fuller

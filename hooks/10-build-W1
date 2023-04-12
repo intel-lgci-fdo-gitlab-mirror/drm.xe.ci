@@ -1,0 +1,41 @@
+#!/usr/bin/bash
+set -ex
+
+SRC_DIR=${CI_KERNEL_SRC_DIR:-.}
+CONFIG="${BUILD_DIR}/.config"
+RESTORE_DISPLAY_CONFIG=0
+
+# Allow all the different ways to set a separate build directory
+if [ -n "$CI_KERNEL_BUILD_DIR" ]; then
+	BUILD_DIR=$CI_KERNEL_BUILD_DIR
+elif [ -n "$KBUILD_OUTPUT" ]; then
+	BUILD_DIR=$KBUILD_OUTPUT
+	unset KBUILD_OUTPUT
+elif [ -n "$O" ]; then
+	BUILD_DIR=$O
+	unset O
+elif [ -n "$BUILD_DIR" ]; then
+	: # nop
+else
+	BUILD_DIR=.
+fi
+
+# everything in this script is relative to the kernel src
+cd "$SRC_DIR"
+
+# only restores DISPLAY config if it was originally enabled
+if grep -q -e "^CONFIG_DRM_XE_DISPLAY=[yY]" "${BUILD_DIR}/.config"; then
+	RESTORE_DISPLAY_CONFIG=1
+fi
+
+cleanup() {
+	[ $RESTORE_DISPLAY_CONFIG -eq 1 ] && \
+		./scripts/config --file "${BUILD_DIR}/.config" --enable CONFIG_DRM_XE_DISPLAY
+}
+trap "cleanup" EXIT
+
+# need to disabled CONFIG_DRM_XE_DISPLAY to avoid pre-existent warnings
+./scripts/config --file "${BUILD_DIR}/.config" --disable CONFIG_DRM_XE_DISPLAY
+
+make -j$(nproc) O=${BUILD_DIR} modules_prepare && \
+	make -j$(nproc) O=${BUILD_DIR} M=drivers/gpu/drm/xe W=1
