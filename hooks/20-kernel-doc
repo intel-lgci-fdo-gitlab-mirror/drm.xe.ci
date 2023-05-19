@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+set -ex
+
+SRC_DIR=${CI_KERNEL_SRC_DIR:-.}
+
+# everything in this script is relative to the kernel src
+cd "$SRC_DIR"
+
+find drivers/gpu/drm/xe/ \
+	-name '*.[ch]' \
+	-not -path 'drivers/gpu/drm/xe/display/*' \
+	| xargs ./scripts/kernel-doc -Werror  -none

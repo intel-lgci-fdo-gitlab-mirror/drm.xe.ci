@@ -2,7 +2,6 @@
 set -ex
 
 SRC_DIR=${CI_KERNEL_SRC_DIR:-.}
-CONFIG="${BUILD_DIR}/.config"
 RESTORE_DISPLAY_CONFIG=0
 
 # Allow all the different ways to set a separate build directory
