@@ -1,5 +1,7 @@
 #!/usr/bin/bash
 
+set -e
+
 cleanup() {
     retcode=$?
     workdir="$1"
@@ -23,3 +25,5 @@ if [[ "$CI" == "true" ]]; then
 fi
 
 run-parts --exit-on-error --verbose "$(dirname $0)/hooks"
+
+echo "All hooks done"
