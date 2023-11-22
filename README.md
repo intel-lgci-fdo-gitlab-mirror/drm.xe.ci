@@ -43,3 +43,97 @@ Some environment variables are available to let you write scripts portable betwe
 - `CI_KERNEL_BUILD_DIR` - dir which contains the main kernel build directory.
 
 The `00-showenv` hook displays current values for these variables on each run for your convenience.
+
+## Kernel (config)
+
+The `kernel` directory contains the configuration used by CI to build drm-tip
+to test the xe module. It's maintained in a way to make it easy for developers
+to simply use the final config and at the same time allow updates to the config
+without losing track of what options are needed and why.
+
+**For developers and CI to build a kernel**: simply copy the `kernel/kconfig`
+file and use it as the configuration. That file is regularly updated with
+"savedefconfig", so the defaults are assumed from the kernel being built.
+
+**For updating the config**: a few steps are needed to update the configuration
+and for that it's important to understand how it's generated:
+
+#. The configuration is derived from a "distro configuration",
+   saved as config.orig
+#. `kernel/[0-9][0-9]*.fragment` are config fragments to be applied to
+   enable/disable the necessary options
+#. `kernel/lsmod/lsmod*.txt` contains the lsmod output on several machines:
+   this is used to trim down modules that are not needed
+
+The script `re-config.sh` is used to automate the process of config updates.
+It's executed in 2 phases: the first, "fullkernel" will generate a config
+so a "full blown distro kernel" can be built and executed on several machines.
+After booting the kernel on those machines, save the output of lsmod to files
+and save them under the `kernel/lsmod/` directory. The second phase will make
+use of those files to trim down the configuration.
+
+### Examples
+
+#. Add a new config
+
+First of all find the appropriate .fragment file depending on the config.
+Using 10-xe.fragment as example:
+
+```console
+$ echo CONFIG_FOO=m >> kernel/10-xe.fragment
+$ cd /path/to/kernel/checkout
+$ git clean -fxd
+$ /path/to/xe/ci/re-config.sh
+$ cd -
+```
+Then make sure your changes show up in kernel/kconfig, the kernel still builds
+and is working according to your changes.
+
+#. Change base kernel config
+
+The base kernel is kept in `kernel/config.orig`. Replace it with the desired
+one. Example using a distro config from /proc/config.gz (assuming you're
+booted in that kernel):
+
+```console
+$ zcat /proc/config.gz > kernel/config.orig
+$ cd /path/to/kernel/checkout
+$ git clean -fxd
+$ /path/to/xe/ci/re-config.sh
+$ cd -
+```
+
+Then make sure your changes show up in kernel/kconfig, the kernel still builds
+and is working according to your changes.
+
+#. Complete config generation process (big base kernel config change)
+
+Depending on how different your base kernel config is from what's being used,
+you may need to run the full process, which includes running a kernel on
+the target machines, collect the module ist, etc.
+
+```console
+$ zcat /proc/config.gz > kernel/config.orig
+$ cd /path/to/kernel/checkout
+$ git clean -fxd
+$ /path/to/xe/ci/re-config.sh full
+$ make -j$(nproc) O=build64
+```
+
+Copy the built kernel to the target machines and get the list of modules loaded.
+Note that we try to keep as built-in any module needed to boot the machine.
+Typically this involves tweaking `kernel/00-ci.fragment` and adding blkdev, pci
+and fs drivers as builtin.
+
+After the list of modules is obtained for each target machine, copy them under
+`kernel/lsmod/`, replacing the ones currently there or adding to them. Run the
+script again to trim down the config:
+
+```console
+$ cd /path/to/kernel/checkout
+$ /path/to/xe/ci/re-config.sh local
+$ cd -
+```
+
+Then make sure your changes show up in kernel/kconfig, the kernel still builds
+and is working according to your changes.
