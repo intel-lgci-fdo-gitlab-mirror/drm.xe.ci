@@ -1,0 +1,12 @@
+# This fragment is already included in the kconfig.  It's provided here as a
+# way to separate the configurations needed or in use by CI  related to xe
+
+CONFIG_KUNIT=m
+CONFIG_DRM_KUNIT_TEST=m
+CONFIG_DRM_XE=m
+CONFIG_DRM_XE_FORCE_PROBE="*"
+CONFIG_DRM_XE_WERROR=y
+CONFIG_DRM_XE_DEBUG=y
+CONFIG_DRM_XE_DEBUG_VM=y
+CONFIG_DRM_XE_DEBUG_MEM=y
+CONFIG_DRM_XE_KUNIT_TEST=m
