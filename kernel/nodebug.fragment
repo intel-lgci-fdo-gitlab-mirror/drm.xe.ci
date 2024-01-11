@@ -2,4 +2,3 @@
 # CONFIG_DRM_XE_DEBUG_VM is not set
 # CONFIG_DRM_XE_DEBUG_MEM is not set
 # CONFIG_DRM_XE_KUNIT_TEST is not set
-# CONFIG_KASAN is not set
