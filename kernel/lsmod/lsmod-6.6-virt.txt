@@ -1,0 +1,16 @@
+Module                  Size  Used by
+coretemp               28672  0
+kvm_intel             471040  0
+kvm                  2048000  1 kvm_intel
+irqbypass              16384  1 kvm
+i2c_i801               57344  0
+i2c_smbus              20480  1 i2c_i801
+e1000e                569344  0
+lpc_ich                36864  0
+ptp                    65536  1 e1000e
+pps_core               40960  1 ptp
+drm                  1159168  0
+fuse                  294912  3
+drm_panel_orientation_quirks    32768  1 drm
+ip_tables              36864  0
+x_tables               73728  1 ip_tables
