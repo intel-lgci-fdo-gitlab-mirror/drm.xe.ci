@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+set -ex
+
+THIS_SCRIPT_DIR=$(dirname $(realpath ${BASH_SOURCE[0]}))
+SRC_DIR=${CI_KERNEL_SRC_DIR:-$(realpath .)}
+TOOLS_SRC_DIR=${CI_TOOLS_SRC_DIR:-$(realpath $THIS_SCRIPT_DIR/../)}
+
+# Allow all the different ways to set a separate build directory
+if [ -n "$CI_KERNEL_BUILD_DIR" ]; then
+	BUILD_DIR=$CI_KERNEL_BUILD_DIR
+elif [ -n "$KBUILD_OUTPUT" ]; then
+	BUILD_DIR=$KBUILD_OUTPUT
+	unset KBUILD_OUTPUT
+elif [ -n "$O" ]; then
+	BUILD_DIR=$O
+	unset O
+elif [ -n "$BUILD_DIR" ]; then
+	: # nop
+else
+	BUILD_DIR=.
+fi
+
+# Use an extra dir for the 32b build
+BUILD_DIR=$BUILD_DIR/build32
+
+# everything in this script is relative to the kernel src
+cd "$SRC_DIR"
+
+mkdir -p $BUILD_DIR
+make -j$(nproc) ARCH=i386 O=${BUILD_DIR} defconfig
+cd ${BUILD_DIR}
+$SRC_DIR/scripts/kconfig/merge_config.sh \
+	.config \
+	$TOOLS_SRC_DIR/kernel/10-xe.fragment
+make -j$(nproc) ARCH=i386 olddefconfig
+make -j$(nproc) ARCH=i386
