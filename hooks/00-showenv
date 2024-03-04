@@ -1,20 +1,4 @@
 #!/usr/bin/bash
 set -ex
 
-pwd
-ls -la
-uname -a
 export | grep -Ei "(^|\W)CI_"
-
-if [ -n "$CI_WORKSPACE_DIR" ]; then
-	git_args="-C $CI_KERNEL_SRC_DIR"
-	git_log_args=""
-else
-	git_args=""
-	# arbitrary limit to avoid going back to stone age
-	# stop on first merge commit
-	merge="$(git log --format=%H -n1 --merges)"
-	git_log_args="${merge}.."
-fi
-
-git --no-pager $git_args log --format=oneline --abbrev-commit $git_log_args
