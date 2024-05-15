@@ -10,17 +10,18 @@
 set -ex
 
 CI_REPO=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+CI_KBUILD_OUTPUT=${CI_KBUILD_OUTPUT:-build64}
 
 # Use the "config.orig" as base, merging the bare minimum CI requirements:
 # it should be a distro-like config with most options enabled as modules,
 # so that the end result can be booted on multiple machines to collect
 # the lsmod output
 fullkernel() {
-	mkdir -p build64
-	cp "$CI_REPO/kernel/config.orig" build64/.config
-	make "-j$(nproc)" O=build64 olddefconfig
+	mkdir -p "$CI_KBUILD_OUTPUT"
+	cp "$CI_REPO/kernel/config.orig" "$CI_KBUILD_OUTPUT/.config"
+	make "-j$(nproc)" O="$CI_KBUILD_OUTPUT" olddefconfig
 
-	pushd build64
+	pushd "$CI_KBUILD_OUTPUT"
 	../scripts/kconfig/merge_config.sh .config "$CI_REPO/kernel/00-ci.fragment"
 	popd
 }
@@ -29,7 +30,7 @@ fullkernel() {
 # in the CI_REPO, trim down our configuration and apply the rest of
 # the fragments
 localkernel() {
-	pushd build64
+	pushd "$CI_KBUILD_OUTPUT"
 	cat "$CI_REPO"/kernel/lsmod/lsmod*.txt > lsmod.txt
 	yes "" | make LSMOD=lsmod.txt localmodconfig
 
