@@ -23,4 +23,4 @@ fi
 cd "$SRC_DIR"
 
 make -j$(nproc) O=${BUILD_DIR} modules_prepare && \
-	make -j$(nproc) O=${BUILD_DIR} M=drivers/gpu/drm/xe W=1
+	make -j$(nproc) O=${BUILD_DIR} W=1 drivers/gpu/drm/xe
