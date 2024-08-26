@@ -31,3 +31,7 @@ CONFIG_VMD=y
 
 # systemd options
 CONFIG_AUTOFS_FS=m
+
+# Workaround for the USB4/Thunderbolt PCIe
+# Tunneling feature causing Lockdep false positives:
+CONFIG_USB4_PCIE_TUNNELING=n
