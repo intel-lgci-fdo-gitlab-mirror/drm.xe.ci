@@ -11004,7 +11004,6 @@ CONFIG_HARDLOCKUP_DETECTOR_COUNTS_HRTIMER=y
 CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
 CONFIG_DETECT_HUNG_TASK=y
 # CONFIG_WQ_WATCHDOG is not set
-CONFIG_WQ_CPU_INTENSIVE_REPORT=y
 # CONFIG_TEST_LOCKUP is not set
 # end of Debug Oops, Lockups and Hangs
 
@@ -11312,6 +11311,11 @@ CONFIG_MODULE_SIG_ALL=n
 # Workaround for the USB4/Thunderbolt PCIe
 # Tunneling feature causing Lockdep false positives:
 CONFIG_USB4_PCIE_TUNNELING=n
+
+# Stop reporting CPU-intensive workqueue task warnings, see thread:
+# https://lore.kernel.org/all/20230901140403.2821777-1-imre.deak@intel.com
+# (Useful, but causes warnings and noise on CI dashboards...)
+CONFIG_WQ_CPU_INTENSIVE_REPORT=n
 
 # Debug options - do not create a gigantic kernel
 CONFIG_DEBUG_INFO_REDUCED=y
