@@ -1,0 +1,10 @@
+base/ubuntu-config-6.8.0-35-generic
+fragments/00-ci.fragment
+fragments/01-ci-fs-storage.fragment
+fragments/02-ci-networking.fragment
+fragments/03-ci-sound.fragment
+fragments/04-ci-hid-input.fragment
+fragments/10-xe.fragment
+fragments/20-i915.fragment
+fragments/30-drm.fragment
+fragments/kasan.fragment
