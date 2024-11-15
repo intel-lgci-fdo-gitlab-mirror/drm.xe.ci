@@ -1,4 +1,4 @@
-base/ubuntu-config-6.8.0-35-generic
+base/ubuntu-config-6.11.0-9-generic
 fragments/00-ci.fragment
 fragments/01-ci-fs-storage.fragment
 fragments/02-ci-networking.fragment
