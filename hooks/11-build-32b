@@ -31,6 +31,6 @@ make -j$(nproc) ARCH=i386 O=${BUILD_DIR} defconfig
 cd ${BUILD_DIR}
 $SRC_DIR/scripts/kconfig/merge_config.sh \
 	.config \
-	$TOOLS_SRC_DIR/kernel/10-xe.fragment
+	$TOOLS_SRC_DIR/kernel/fragments/10-xe.fragment
 make -j$(nproc) ARCH=i386 olddefconfig
 make -j$(nproc) ARCH=i386
