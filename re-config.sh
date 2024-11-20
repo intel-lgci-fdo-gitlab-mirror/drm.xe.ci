@@ -27,6 +27,8 @@ if [[ ! -f "$MERGE_CONFIG" ]]; then
 	exit 1
 fi
 
+MERGE_CONFIG=$(realpath "$MERGE_CONFIG")
+
 pushd $KCONFIGS_PATH
 for f in "${FLAVORS[@]}"; do
 	if [[ ! -f "flavors/$f.flavor" ]]; then
