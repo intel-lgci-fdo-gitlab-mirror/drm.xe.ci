@@ -46,6 +46,11 @@ CONFIG_WQ_CPU_INTENSIVE_REPORT=n
 # https://gitlab.freedesktop.org/drm/xe/kernel/-/issues/3466
 CONFIG_INTEL_IOMMU_DEFAULT_ON=n
 
+# From Marten Lankhorst, 2024-11-20
+# Disable SimpleDRM drivers to prevent false positive KBL-G fails
+# TODO: This needs to be built as a module + blacklisted on DUTs
+CONFIG_DRM_SIMPLEDRM=n
+
 # === End Workarounds ===
 
 # Debug options - do not create a gigantic kernel
