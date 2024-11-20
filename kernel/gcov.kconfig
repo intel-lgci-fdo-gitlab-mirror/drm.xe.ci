@@ -9010,7 +9010,6 @@ CONFIG_AMD_IOMMU=y
 CONFIG_DMAR_TABLE=y
 CONFIG_INTEL_IOMMU=y
 CONFIG_INTEL_IOMMU_SVM=y
-CONFIG_INTEL_IOMMU_DEFAULT_ON=y
 CONFIG_INTEL_IOMMU_FLOPPY_WA=y
 CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON=y
 CONFIG_INTEL_IOMMU_PERF_EVENTS=y
@@ -11489,6 +11488,11 @@ CONFIG_USB4_PCIE_TUNNELING=n
 # https://lore.kernel.org/all/20230901140403.2821777-1-imre.deak@intel.com
 # (Useful, but causes warnings and noise on CI dashboards...)
 CONFIG_WQ_CPU_INTENSIVE_REPORT=n
+
+# Workaround migration logic not working with iommu enabled, causing
+# a lot of jobs to fail
+# https://gitlab.freedesktop.org/drm/xe/kernel/-/issues/3466
+CONFIG_INTEL_IOMMU_DEFAULT_ON=n
 
 # Debug options - do not create a gigantic kernel
 CONFIG_DEBUG_INFO_REDUCED=y
