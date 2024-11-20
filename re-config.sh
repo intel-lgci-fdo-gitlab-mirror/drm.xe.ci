@@ -4,12 +4,7 @@
 
 set -ex
 
-if [[ "$#" < 1 ]]; then
-	echo "Provide the kconfig flavor to create."
-	exit 1
-fi
-
-FLAVOR="$1"
+FLAVORS=("$@")
 KCONFIGS_PATH="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/kernel"
 
 : ${KERNEL_REPO:="~/linux"}
@@ -21,17 +16,19 @@ if [[ ! -f "$MERGE_CONFIG" ]]; then
 	exit 1
 fi
 
-if [[ ! -f "$KCONFIGS_PATH/flavors/$FLAVOR.flavor" ]]; then
-	echo "Flavor '$FLAVOR' does not exist."
-	exit 1
-fi
-
 pushd $KCONFIGS_PATH
-export KCONFIG_CONFIG="$FLAVOR.kconfig"
-xargs -a "flavors/$FLAVOR.flavor" -- "$MERGE_CONFIG" -m
-popd
+for f in "${FLAVORS[@]}"; do
+	if [[ ! -f "flavors/$f.flavor" ]]; then
+		echo "Flavor '$f' does not exist."
+		exit 1
+	fi
 
-if [[ "$FLAVOR" == "debug" ]]; then
-	echo "Saving output to 'kconfig' too for backwards compatibility"
-	cp "$KCONFIGS_PATH/$FLAVOR.kconfig" "$KCONFIGS_PATH/kconfig"
-fi
+	export KCONFIG_CONFIG="$f.kconfig"
+	xargs -a "flavors/$f.flavor" -- "$MERGE_CONFIG" -m
+
+	if [[ "$f" == "debug" ]]; then
+		echo "Saving output to 'kconfig' too for backwards compatibility"
+		cp "$KCONFIGS_PATH/$f.kconfig" "$KCONFIGS_PATH/kconfig"
+	fi
+done
+popd
