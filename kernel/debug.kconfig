@@ -2140,7 +2140,6 @@ CONFIG_GENERIC_PCI_IOMAP=y
 CONFIG_PCI=y
 CONFIG_PCI_DOMAINS=y
 CONFIG_PCIEPORTBUS=y
-CONFIG_HOTPLUG_PCI_PCIE=y
 CONFIG_PCIEAER=y
 # CONFIG_PCIEAER_INJECT is not set
 CONFIG_PCIEAER_CXL=y
@@ -11482,10 +11481,18 @@ CONFIG_MODULE_SIG_ALL=n
 # as a whole (in the CI image + modules tarball).
 # CONFIG_MODULE_COMPRESS_ZSTD is not set
 
+# === Workarounds ===
+
+# From Jeevan B, 2024-08-26
 # Workaround for the USB4/Thunderbolt PCIe
 # Tunneling feature causing Lockdep false positives:
 CONFIG_USB4_PCIE_TUNNELING=n
 
+# From Luciano Coelho, 2024-10-08
+# Workaround for PCIe hotplug causing Lockdep false positives:
+CONFIG_HOTPLUG_PCI_PCIE=n
+
+# From Lucas de Marchi, 2024-10-28
 # Stop reporting CPU-intensive workqueue task warnings, see thread:
 # https://lore.kernel.org/all/20230901140403.2821777-1-imre.deak@intel.com
 # (Useful, but causes warnings and noise on CI dashboards...)
@@ -11495,6 +11502,8 @@ CONFIG_WQ_CPU_INTENSIVE_REPORT=n
 # a lot of jobs to fail
 # https://gitlab.freedesktop.org/drm/xe/kernel/-/issues/3466
 CONFIG_INTEL_IOMMU_DEFAULT_ON=n
+
+# === End Workarounds ===
 
 # Debug options - do not create a gigantic kernel
 CONFIG_DEBUG_INFO_REDUCED=y
