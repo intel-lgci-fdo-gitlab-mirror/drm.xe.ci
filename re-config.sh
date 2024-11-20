@@ -1,7 +1,11 @@
 #!/bin/bash
 # Builds a kernel kconfig flavor (from kernel/flavors) and saves it in the "kernel" dir.
-# Usage: KERNEL_REPO=path/to/any/kernel/checkout ./re-config.sh <profile-name>
-
+# Usage:
+#     KERNEL_REPO=path/to/any/kernel/checkout ./re-config.sh <flavor-name>
+#
+# flavor-name may be the file under kernel/flavors/ or just the name.
+# This updates the kconfig for all flavors:
+#     KERNEL_REPO=path/to/any/kernel/checkout ./re-config.sh kernel/flavors/*
 set -ex
 
 FLAVORS=("$@")
@@ -9,6 +13,13 @@ KCONFIGS_PATH="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/kernel"
 
 : ${KERNEL_REPO:="~/linux"}
 : ${MERGE_CONFIG:="$KERNEL_REPO/scripts/kconfig/merge_config.sh"}
+
+# Extract and sanitize flavors
+for ((i=0; i<${#FLAVORS[@]}; i++)); do
+	f="$(basename ${FLAVORS[i]})"
+	f="${f%.flavor}"
+	FLAVORS[i]="$f"
+done
 
 if [[ ! -f "$MERGE_CONFIG" ]]; then
 	echo "$MERGE_CONFIG script does not exist."
