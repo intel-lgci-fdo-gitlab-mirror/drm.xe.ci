@@ -2,6 +2,45 @@
 
 CI configuration for Xe-related repositories.
 
+## Kernel (config)
+
+The `kernel` directory contains the configuration used by CI to build drm-tip
+to test the i915/xe modules. It's maintained in a way to make it easy for
+developers to simply use the final config and at the same time allow updates to
+the config without losing track of what options are needed and why.
+
+**For developers and CI to build a kernel**: simply copy the `kernel/kconfig`
+file and use it as the configuration. That file is regularly updated with
+a base distribution kconfig + CI changes from the `fragments` directory.
+
+**For updating the config**: a few steps are needed to update the configuration
+and for that it's important to understand how it's generated:
+
+#. The configuration is derived from a "distro configuration",
+   saved in the `kernel/base` directory. Add new distro base
+   configs here, then update flavors to make use of them.
+#. `kernel/fragments/*.fragment` are config fragments to be
+   applied to enable/disable the necessary options.
+#. `kernel/flavors/*.flavor` are lists of base + fragment kconfigs
+   to apply on top of each other to generate a given kconfig variant.
+
+The script `re-config.sh` is used to automate the process of config updates.
+Run `KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh debug` to make
+the primary `kernel/kconfig` and `kernel/debug.kconfig` files (same contents).
+Use any other flavor to create just the `kernel/$FLAVOR.kconfig` file.
+When proposing changes, always re-generate all the flavor kconfig's. This can
+be done with:
+
+```
+KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh kernel/flavors/*
+```
+
+The `KERNEL_REPO` is required for the `merge_config.sh` script. The default
+is to use a checkout in `~/linux`.
+
+Hint: If you are currently booted on a kernel from which you want to pull a new
+base kconfig, use `zcat /proc/config.gz > kernel/base/kconfig-name-version`.
+
 
 ## CI Hooks
 
@@ -43,42 +82,3 @@ Some environment variables are available to let you write scripts portable betwe
 - `CI_KERNEL_BUILD_DIR` - dir which contains the main kernel build directory.
 
 The `00-showenv` hook displays current values for these variables on each run for your convenience.
-
-## Kernel (config)
-
-The `kernel` directory contains the configuration used by CI to build drm-tip
-to test the i915/xe modules. It's maintained in a way to make it easy for
-developers to simply use the final config and at the same time allow updates to
-the config without losing track of what options are needed and why.
-
-**For developers and CI to build a kernel**: simply copy the `kernel/kconfig`
-file and use it as the configuration. That file is regularly updated with
-a base distribution kconfig + CI changes from the `fragments` directory.
-
-**For updating the config**: a few steps are needed to update the configuration
-and for that it's important to understand how it's generated:
-
-#. The configuration is derived from a "distro configuration",
-   saved in the `kernel/base` directory. Add new distro base
-   configs here, then update flavors to make use of them.
-#. `kernel/fragments/*.fragment` are config fragments to be
-   applied to enable/disable the necessary options.
-#. `kernel/flavors/*.flavor` are lists of base + fragment kconfigs
-   to apply on top of each other to generate a given kconfig variant.
-
-The script `re-config.sh` is used to automate the process of config updates.
-Run `KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh debug` to make
-the primary `kernel/kconfig` and `kernel/debug.kconfig` files (same contents).
-Use any other flavor to create just the `kernel/$FLAVOR.kconfig` file.
-When proposing changes, always re-generate all the flavor kconfig's. This can
-be done with:
-
-```
-KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh kernel/flavors/*
-```
-
-The `KERNEL_REPO` is required for the `merge_config.sh` script. The default
-is to use a checkout in `~/linux`.
-
-Hint: If you are currently booted on a kernel from which you want to pull a new
-base kconfig, use `zcat /proc/config.gz > kernel/base/kconfig-name-version`.
