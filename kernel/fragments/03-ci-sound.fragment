@@ -7,6 +7,14 @@ CONFIG_SND_SOC_HDAC_HDA=m
 CONFIG_SND_SOC_HDAC_HDMI=m
 CONFIG_SND_SOC_HDMI_CODEC=m
 
+# Distros enable this to conserve power, however in a CI setup with audio
+# enabled display connected, snd will keep sending a (silent) audio stream
+# to the monitor to reduce latency. Depending on display generation this can
+# block device to go to D3, affecting the rpm tests. In real life scenarios,
+# not going to D3 with platforms older than ADL-P and with external display
+# attached, it's a well understood limitation.
+CONFIG_SND_HDA_INTEL_HDMI_SILENT_STREAM=n
+
 # Lots and lots of things we don't need
 # The only thing we want sound for is HDMI audio tests,
 # most of the codecs here are platform devices. We still
