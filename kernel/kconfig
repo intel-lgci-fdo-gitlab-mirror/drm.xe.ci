@@ -5267,7 +5267,6 @@ CONFIG_SENSORS_INA209=m
 CONFIG_SENSORS_INA2XX=m
 CONFIG_SENSORS_INA238=m
 CONFIG_SENSORS_INA3221=m
-CONFIG_SENSORS_SPD5118=m
 # CONFIG_SENSORS_SPD5118_DETECT is not set
 CONFIG_SENSORS_TC74=m
 CONFIG_SENSORS_THMC50=m
@@ -11509,6 +11508,13 @@ CONFIG_INTEL_IOMMU_DEFAULT_ON=n
 # Disable SimpleDRM drivers to prevent false positive KBL-G fails
 # TODO: This needs to be built as a module + blacklisted on DUTs
 CONFIG_DRM_SIMPLEDRM=n
+
+# Fail to suspend/resume
+# <3> [120.648546] spd5118 3-0051: PM: dpm_run_callback(): spd5118_resume [spd5118] returns -110
+# <3> [120.648598] spd5118 3-0051: PM: failed to resume async: error -110
+# <3> [122.825989] spd5118 3-0053: PM: failed to resume async: error -110
+# https://lore.kernel.org/all/dmx2x5sziux7ubk5fcas2nmj4lt3vpalr5gc7qmmwq2megmp24@24vmehdkle3x/
+CONFIG_SENSORS_SPD5118=n
 
 # === End Workarounds ===
 
