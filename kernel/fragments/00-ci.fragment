@@ -41,11 +41,6 @@ CONFIG_HOTPLUG_PCI_PCIE=n
 # (Useful, but causes warnings and noise on CI dashboards...)
 CONFIG_WQ_CPU_INTENSIVE_REPORT=n
 
-# Workaround migration logic not working with iommu enabled, causing
-# a lot of jobs to fail
-# https://gitlab.freedesktop.org/drm/xe/kernel/-/issues/3466
-CONFIG_INTEL_IOMMU_DEFAULT_ON=n
-
 # From Marten Lankhorst, 2024-11-20
 # Disable SimpleDRM drivers to prevent false positive KBL-G fails
 # TODO: This needs to be built as a module + blacklisted on DUTs
