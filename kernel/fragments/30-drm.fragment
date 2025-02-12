@@ -1,3 +1,6 @@
+# Build testing
+CONFIG_DRM_HEADER_TEST=y
+
 # Other DRM drivers - for build-test purposes:
 CONFIG_DRM_AMDGPU=m
 CONFIG_DRM_AMDGPU_SI=y
