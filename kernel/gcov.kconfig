@@ -10534,7 +10534,6 @@ CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_BARE=y
 CONFIG_CC_HAS_AUTO_VAR_INIT_ZERO=y
 # CONFIG_INIT_STACK_NONE is not set
 # CONFIG_INIT_STACK_ALL_PATTERN is not set
-CONFIG_INIT_STACK_ALL_ZERO=y
 CONFIG_INIT_ON_ALLOC_DEFAULT_ON=y
 # CONFIG_INIT_ON_FREE_DEFAULT_ON is not set
 CONFIG_CC_HAS_ZERO_CALL_USED_REGS=y
@@ -11620,6 +11619,11 @@ CONFIG_GREYBUS=n
 CONFIG_ACCESSIBILITY=n
 CONFIG_SOUNDWIRE=n
 CONFIG_FPGA=n
+
+# Disable zero'ed stack - some distros don't use it and we always
+# receive fixup patches after introducing bugs rather than fixing
+# it before merging.
+CONFIG_INIT_STACK_ALL_ZERO=n
 
 # Built-in block devices (needed for boot w/o initrd):
 CONFIG_BLK_DEV_NBD=y
