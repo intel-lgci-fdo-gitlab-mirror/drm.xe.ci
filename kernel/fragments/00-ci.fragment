@@ -163,3 +163,8 @@ CONFIG_GREYBUS=n
 CONFIG_ACCESSIBILITY=n
 CONFIG_SOUNDWIRE=n
 CONFIG_FPGA=n
+
+# Disable zero'ed stack - some distros don't use it and we always
+# receive fixup patches after introducing bugs rather than fixing
+# it before merging.
+CONFIG_INIT_STACK_ALL_ZERO=n
