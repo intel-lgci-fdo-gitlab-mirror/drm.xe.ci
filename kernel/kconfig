@@ -11026,7 +11026,6 @@ CONFIG_PRINTK_TIME=y
 # CONFIG_STACKTRACE_BUILD_ID is not set
 CONFIG_CONSOLE_LOGLEVEL_DEFAULT=7
 CONFIG_CONSOLE_LOGLEVEL_QUIET=3
-CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
 CONFIG_BOOT_PRINTK_DELAY=y
 CONFIG_DYNAMIC_DEBUG=y
 CONFIG_DYNAMIC_DEBUG_CORE=y
@@ -11626,6 +11625,12 @@ CONFIG_FPGA=n
 # receive fixup patches after introducing bugs rather than fixing
 # it before merging.
 CONFIG_INIT_STACK_ALL_ZERO=n
+
+# If something is not using an explicit log level, make it appear as
+# KERN_NOTICE. The distro default of KERN_WARNING may be too noise: drm side
+# always use a log level, and most of the places in the kernel do that too.
+# For the places that don't, let's not make the warning polute the CI results.
+CONFIG_MESSAGE_LOGLEVEL_DEFAULT=5
 
 # Built-in block devices (needed for boot w/o initrd):
 CONFIG_BLK_DEV_NBD=y
