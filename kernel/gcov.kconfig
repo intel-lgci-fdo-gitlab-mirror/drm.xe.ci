@@ -6897,6 +6897,7 @@ CONFIG_DRM_BOCHS=m
 CONFIG_DRM_CIRRUS_QEMU=m
 CONFIG_DRM_GM12U320=m
 CONFIG_DRM_PANEL_MIPI_DBI=m
+CONFIG_DRM_SIMPLEDRM=y
 CONFIG_TINYDRM_HX8357D=m
 CONFIG_TINYDRM_ILI9163=m
 CONFIG_TINYDRM_ILI9225=m
@@ -11495,11 +11496,6 @@ CONFIG_HOTPLUG_PCI_PCIE=n
 # https://lore.kernel.org/all/20230901140403.2821777-1-imre.deak@intel.com
 # (Useful, but causes warnings and noise on CI dashboards...)
 CONFIG_WQ_CPU_INTENSIVE_REPORT=n
-
-# From Marten Lankhorst, 2024-11-20
-# Disable SimpleDRM drivers to prevent false positive KBL-G fails
-# TODO: This needs to be built as a module + blacklisted on DUTs
-CONFIG_DRM_SIMPLEDRM=n
 
 # Fail to suspend/resume
 # <3> [120.648546] spd5118 3-0051: PM: dpm_run_callback(): spd5118_resume [spd5118] returns -110
