@@ -8,11 +8,13 @@
 #     KERNEL_REPO=path/to/any/kernel/checkout ./re-config.sh kernel/flavors/*
 set -ex
 
+XE_CI_DIR_PATH="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
 FLAVORS=("$@")
-KCONFIGS_PATH="$(realpath "$(dirname "${BASH_SOURCE[0]}")")/kernel"
 
-: ${KERNEL_REPO:="~/linux"}
-: ${MERGE_CONFIG:="$KERNEL_REPO/scripts/kconfig/merge_config.sh"}
+# If no flavors were specified, just regenerate all of them:
+if [[ "$FLAVORS" == "" ]]; then
+	FLAVORS=($(find "$XE_CI_DIR_PATH/kernel" -name "*.flavor"))
+fi
 
 # Extract and sanitize flavors
 for ((i=0; i<${#FLAVORS[@]}; i++)); do
@@ -21,15 +23,7 @@ for ((i=0; i<${#FLAVORS[@]}; i++)); do
 	FLAVORS[i]="$f"
 done
 
-if [[ ! -f "$MERGE_CONFIG" ]]; then
-	echo "$MERGE_CONFIG script does not exist."
-	echo "Provide a path to a kernel checkout using the KERNEL_REPO env var."
-	exit 1
-fi
-
-MERGE_CONFIG=$(realpath "$MERGE_CONFIG")
-
-pushd $KCONFIGS_PATH
+pushd "$XE_CI_DIR_PATH/kernel"
 for f in "${FLAVORS[@]}"; do
 	if [[ ! -f "flavors/$f.flavor" ]]; then
 		echo "Flavor '$f' does not exist."
@@ -37,11 +31,11 @@ for f in "${FLAVORS[@]}"; do
 	fi
 
 	export KCONFIG_CONFIG="$f.kconfig"
-	xargs -a "flavors/$f.flavor" -- "$MERGE_CONFIG" -m
+	xargs -a "flavors/$f.flavor" -- "$XE_CI_DIR_PATH/vendor/merge_config.sh" -m
 
 	if [[ "$f" == "debug" ]]; then
 		echo "Saving output to 'kconfig' too for backwards compatibility"
-		cp "$KCONFIGS_PATH/$f.kconfig" "$KCONFIGS_PATH/kconfig"
+		cp "$XE_CI_DIR_PATH/kernel/$f.kconfig" "$XE_CI_DIR_PATH/kernel/kconfig"
 	fi
 done
 popd
