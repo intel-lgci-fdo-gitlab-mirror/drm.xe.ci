@@ -6898,6 +6898,7 @@ CONFIG_DRM_BOCHS=m
 CONFIG_DRM_CIRRUS_QEMU=m
 CONFIG_DRM_GM12U320=m
 CONFIG_DRM_PANEL_MIPI_DBI=m
+CONFIG_DRM_SIMPLEDRM=y
 CONFIG_TINYDRM_HX8357D=m
 CONFIG_TINYDRM_ILI9163=m
 CONFIG_TINYDRM_ILI9225=m
@@ -11026,7 +11027,6 @@ CONFIG_PRINTK_TIME=y
 # CONFIG_STACKTRACE_BUILD_ID is not set
 CONFIG_CONSOLE_LOGLEVEL_DEFAULT=7
 CONFIG_CONSOLE_LOGLEVEL_QUIET=3
-CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
 CONFIG_BOOT_PRINTK_DELAY=y
 CONFIG_DYNAMIC_DEBUG=y
 CONFIG_DYNAMIC_DEBUG_CORE=y
@@ -11498,11 +11498,6 @@ CONFIG_HOTPLUG_PCI_PCIE=n
 # (Useful, but causes warnings and noise on CI dashboards...)
 CONFIG_WQ_CPU_INTENSIVE_REPORT=n
 
-# From Marten Lankhorst, 2024-11-20
-# Disable SimpleDRM drivers to prevent false positive KBL-G fails
-# TODO: This needs to be built as a module + blacklisted on DUTs
-CONFIG_DRM_SIMPLEDRM=n
-
 # Fail to suspend/resume
 # <3> [120.648546] spd5118 3-0051: PM: dpm_run_callback(): spd5118_resume [spd5118] returns -110
 # <3> [120.648598] spd5118 3-0051: PM: failed to resume async: error -110
@@ -11624,6 +11619,12 @@ CONFIG_FPGA=n
 # receive fixup patches after introducing bugs rather than fixing
 # it before merging.
 CONFIG_INIT_STACK_ALL_ZERO=n
+
+# If something is not using an explicit log level, make it appear as
+# KERN_NOTICE. The distro default of KERN_WARNING may be too noisy: drm side
+# always use a log level, and most of the places in the kernel do that too.
+# For the places that don't, let's not make the warning polute the CI results.
+CONFIG_MESSAGE_LOGLEVEL_DEFAULT=5
 
 # Built-in block devices (needed for boot w/o initrd):
 CONFIG_BLK_DEV_NBD=y

@@ -11622,7 +11622,7 @@ CONFIG_FPGA=n
 CONFIG_INIT_STACK_ALL_ZERO=n
 
 # If something is not using an explicit log level, make it appear as
-# KERN_NOTICE. The distro default of KERN_WARNING may be too noise: drm side
+# KERN_NOTICE. The distro default of KERN_WARNING may be too noisy: drm side
 # always use a log level, and most of the places in the kernel do that too.
 # For the places that don't, let's not make the warning polute the CI results.
 CONFIG_MESSAGE_LOGLEVEL_DEFAULT=5
