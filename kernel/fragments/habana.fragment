@@ -1,0 +1,2 @@
+# Configs required for Habana development builds:
+CONFIG_DRM_XE_PRESI_PCI_DEVELOPMENT_MODE=y
