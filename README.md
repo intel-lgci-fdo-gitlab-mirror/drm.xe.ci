@@ -25,18 +25,8 @@ and for that it's important to understand how it's generated:
    to apply on top of each other to generate a given kconfig variant.
 
 The script `re-config.sh` is used to automate the process of config updates.
-Run `KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh debug` to make
-the primary `kernel/kconfig` and `kernel/debug.kconfig` files (same contents).
-Use any other flavor to create just the `kernel/$FLAVOR.kconfig` file.
-When proposing changes, always re-generate all the flavor kconfig's. This can
-be done with:
-
-```
-KERNEL_REPO=~/path/to/your/linux/checkout ./re-config.sh kernel/flavors/*
-```
-
-The `KERNEL_REPO` is required for the `merge_config.sh` script. The default
-is to use a checkout in `~/linux`.
+When proposing changes, always re-generate all the flavor kconfigs. This can
+be done with: `./re-config.sh` and you're good to go.
 
 Hint: If you are currently booted on a kernel from which you want to pull a new
 base kconfig, use `zcat /proc/config.gz > kernel/base/kconfig-name-version`.
