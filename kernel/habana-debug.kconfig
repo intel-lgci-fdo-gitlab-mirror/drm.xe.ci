@@ -10841,7 +10841,6 @@ CONFIG_BINARY_PRINTF=y
 # Library routines
 #
 CONFIG_RAID6_PQ=m
-CONFIG_RAID6_PQ_BENCHMARK=y
 CONFIG_LINEAR_RANGES=y
 CONFIG_PACKING=y
 CONFIG_BITREVERSE=y
@@ -11627,6 +11626,9 @@ CONFIG_INIT_STACK_ALL_ZERO=n
 # always use a log level, and most of the places in the kernel do that too.
 # For the places that don't, let's not make the warning polute the CI results.
 CONFIG_MESSAGE_LOGLEVEL_DEFAULT=5
+
+# Disable RAID6 benchmarks as this is time consuming in some cases
+CONFIG_RAID6_PQ_BENCHMARK=n
 
 # Built-in block devices (needed for boot w/o initrd):
 CONFIG_BLK_DEV_NBD=y
