@@ -30,7 +30,6 @@ CONFIG_THREAD_INFO_IN_TASK=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 # CONFIG_COMPILE_TEST is not set
 # CONFIG_WERROR is not set
-# CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_BUILD_SALT=""
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_BZIP2=y
@@ -6888,7 +6887,6 @@ CONFIG_DRM_PANEL_BRIDGE=y
 #
 # Display Interface Bridges
 #
-CONFIG_DRM_ANALOGIX_ANX78XX=m
 CONFIG_DRM_ANALOGIX_DP=m
 # end of Display Interface Bridges
 
@@ -11458,7 +11456,8 @@ CONFIG_RUST_OVERFLOW_CHECKS=y
 
 # TODO: change this once i915 and xe have a shared kernel build
 # Note: This is automatically changed in CI in some cases
-CONFIG_LOCALVERSION="-xe"
+CONFIG_LOCALVERSION="-lgci-xe"
+CONFIG_LOCALVERSION_AUTO=y
 
 # Expose kconfig in /proc/config.gz
 CONFIG_IKCONFIG=y
@@ -11844,7 +11843,7 @@ CONFIG_E1000E=m
 CONFIG_IGC=m
 
 CONFIG_ICE=n
-CONFIG_I40E=m
+CONFIG_I40E=n
 CONFIG_I40EVF=n
 CONFIG_IAVF=n
 CONFIG_IDPF=n
@@ -12764,6 +12763,9 @@ CONFIG_DRM_I915_DEBUG_VBLANK_EVADE=y
 
 # Build testing
 CONFIG_DRM_HEADER_TEST=y
+
+# Analogix DRM bridges - we don't use it, broke the build for a while:
+CONFIG_DRM_ANALOGIX_ANX78XX=n
 
 # Other DRM drivers - for build-test purposes:
 CONFIG_DRM_AMDGPU=m
