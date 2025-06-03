@@ -1,6 +1,9 @@
 # Build testing
 CONFIG_DRM_HEADER_TEST=y
 
+# Analogix DRM bridges - we don't use it, broke the build for a while:
+CONFIG_DRM_ANALOGIX_ANX78XX=n
+
 # Other DRM drivers - for build-test purposes:
 CONFIG_DRM_AMDGPU=m
 CONFIG_DRM_AMDGPU_SI=y
