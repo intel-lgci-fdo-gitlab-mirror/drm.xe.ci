@@ -4,7 +4,6 @@
 # TODO: change this once i915 and xe have a shared kernel build
 # Note: This is automatically changed in CI in some cases
 CONFIG_LOCALVERSION="-lgci-xe"
-CONFIG_LOCALVERSION_AUTO=y
 
 # Expose kconfig in /proc/config.gz
 CONFIG_IKCONFIG=y

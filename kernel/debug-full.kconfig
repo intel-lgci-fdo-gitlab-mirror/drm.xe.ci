@@ -30,6 +30,7 @@ CONFIG_THREAD_INFO_IN_TASK=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 # CONFIG_COMPILE_TEST is not set
 # CONFIG_WERROR is not set
+# CONFIG_LOCALVERSION_AUTO is not set
 CONFIG_BUILD_SALT=""
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_BZIP2=y
@@ -11458,7 +11459,6 @@ CONFIG_RUST_OVERFLOW_CHECKS=y
 # TODO: change this once i915 and xe have a shared kernel build
 # Note: This is automatically changed in CI in some cases
 CONFIG_LOCALVERSION="-lgci-xe"
-CONFIG_LOCALVERSION_AUTO=y
 
 # Expose kconfig in /proc/config.gz
 CONFIG_IKCONFIG=y
