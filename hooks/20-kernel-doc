@@ -9,4 +9,9 @@ cd "$SRC_DIR"
 find drivers/gpu/drm/xe/ \
 	-name '*.[ch]' \
 	-not -path 'drivers/gpu/drm/xe/display/*' \
-	| xargs ./scripts/kernel-doc -Werror  -none 'include/uapi/drm/xe_drm.h'
+	| xargs ./scripts/kernel-doc -Werror  -none \
+	'drivers/gpu/drm/drm_gpusvm.c' \
+	'drivers/gpu/drm/drm_pagemap.c' \
+	'include/drm/drm_gpusvm.h' \
+	'include/drm/drm_pagemap.h' \
+	'include/uapi/drm/xe_drm.h'
