@@ -11550,6 +11550,7 @@ CONFIG_INTEL_PMC_CORE=y
 # Management Engine Interface (for firmware uploads):
 CONFIG_INTEL_MEI_GSC=m
 CONFIG_INTEL_MEI_GSC_PROXY=m
+CONFIG_INTEL_MEI_LB=m
 
 # USB features:
 CONFIG_USB_TMC=m
